@@ -17,6 +17,8 @@
   --radio-accent: #c8820a;
   --chrono-accent: #8b1a1a;
   --flag-accent: #1a3a8b;
+  --language-accent: #4a1a7a;
+  --country-accent: #1a5a5a;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -175,7 +177,9 @@ header {
 .card-map   { --card-color: var(--map-accent); }
 .card-radio { --card-color: var(--radio-accent); }
 .card-chrono{ --card-color: var(--chrono-accent); }
-.card-flag  { --card-color: var(--flag-accent); }
+.card-flag     { --card-color: var(--flag-accent); }
+.card-language { --card-color: var(--language-accent); }
+.card-country  { --card-color: var(--country-accent); }
 
 /* ── MANIFESTO ── */
 .manifesto {
@@ -250,7 +254,7 @@ footer {
     <div class="hero-eyebrow">Geography games</div>
     <h1 class="hero-title">Know your<br><em>world.</em></h1>
     <p class="hero-body">
-      Four free geography games that actually respect your time.
+      Six free geography games that actually respect your time.
       <strong>No ads. No subscriptions. No accounts.</strong>
       Just you, a map, and everything you never knew you didn't know.
     </p>
@@ -298,6 +302,26 @@ footer {
       <div class="card-desc">A flag, hidden behind four panels. Reveal as little as possible and still get it right. The faster you guess, the more points you score.</div>
       <div class="card-footer">
         <span class="card-tag">Flags</span>
+        <span class="card-arrow">↗</span>
+      </div>
+    </a>
+
+    <a href="https://language.guessr.games" class="game-card card-language">
+      <div class="card-icon">🗣️</div>
+      <div class="card-name">Language<span>Guessr</span></div>
+      <div class="card-desc">A text excerpt or audio clip in an unknown language. Read it or listen. Identify the language — wager more points if you're confident.</div>
+      <div class="card-footer">
+        <span class="card-tag">Linguistics</span>
+        <span class="card-arrow">↗</span>
+      </div>
+    </a>
+
+    <a href="https://country.guessr.games" class="game-card card-country">
+      <div class="card-icon">🌐</div>
+      <div class="card-name">Country<span>Guessr</span></div>
+      <div class="card-desc">The outline of a country, nothing else. Easy mode shows the capital city. Hard mode gives you a blank shape and a search box.</div>
+      <div class="card-footer">
+        <span class="card-tag">Outlines</span>
         <span class="card-arrow">↗</span>
       </div>
     </a>
