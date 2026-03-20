@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guessr — Free Geography Games</title>
+<meta name="description" content="Free geography guessing games. No ads, no accounts, no nonsense. MapGuessr, RadioGuessr, ChronoGuessr, FlagGuessr.">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f0e8;
+  --ink: #0f0e0b;
+  --muted: #7a7060;
+  --border: #d4c9b0;
+  --card-bg: #fff;
+  --map-accent: #1a6b3a;
+  --radio-accent: #c8820a;
+  --chrono-accent: #8b1a1a;
+  --flag-accent: #1a3a8b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── NOISE TEXTURE ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── GRID LINES ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 80px 80px;
+  opacity: 0.3;
+}
+
+.wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+/* ── HEADER ── */
+header {
+  padding: 32px 0 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.header-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px; font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+}
+.header-logo span { color: var(--muted); font-weight: 400; }
+.header-tag {
+  font-size: 12px; color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 4px 12px; border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+/* ── HERO ── */
+.hero { padding: 80px 0 60px; }
+.hero-eyebrow {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.hero-eyebrow::before {
+  content: ''; display: block; width: 32px; height: 1px; background: var(--muted);
+}
+.hero-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(52px, 9vw, 108px);
+  font-weight: 800;
+  line-height: 0.92;
+  letter-spacing: -3px;
+  color: var(--ink);
+  margin-bottom: 32px;
+}
+.hero-title em {
+  font-style: italic; font-weight: 400;
+  color: var(--muted);
+}
+.hero-body {
+  max-width: 480px;
+  font-size: 16px; line-height: 1.65;
+  color: var(--muted); font-weight: 300;
+}
+.hero-body strong { color: var(--ink); font-weight: 500; }
+
+/* ── DIVIDER ── */
+.divider {
+  border: none; border-top: 1px solid var(--border);
+  margin: 0 0 60px;
+}
+
+/* ── GAMES GRID ── */
+.games-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 24px;
+}
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2px;
+  margin-bottom: 80px;
+}
+
+/* ── GAME CARD ── */
+.game-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 32px 28px;
+  text-decoration: none;
+  color: var(--ink);
+  display: flex; flex-direction: column; gap: 16px;
+  transition: transform .2s, box-shadow .2s;
+  position: relative;
+  overflow: hidden;
+}
+.game-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,.1);
+  z-index: 2;
+}
+.game-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--card-color);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .3s ease;
+}
+.game-card:hover::before { transform: scaleX(1); }
+
+.card-icon { font-size: 36px; line-height: 1; }
+.card-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 26px; font-weight: 700; letter-spacing: -0.5px;
+  line-height: 1;
+}
+.card-name span { color: var(--card-color); }
+.card-desc {
+  font-size: 14px; color: var(--muted); line-height: 1.55;
+  font-weight: 300; flex: 1;
+}
+.card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 16px; border-top: 1px solid var(--border);
+}
+.card-tag {
+  font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--card-color);
+  background: color-mix(in srgb, var(--card-color) 10%, transparent);
+  padding: 3px 8px; border-radius: 3px;
+}
+.card-arrow {
+  font-size: 18px; color: var(--muted);
+  transition: transform .2s, color .2s;
+}
+.game-card:hover .card-arrow { transform: translate(3px, -3px); color: var(--card-color); }
+
+/* card color themes */
+.card-map   { --card-color: var(--map-accent); }
+.card-radio { --card-color: var(--radio-accent); }
+.card-chrono{ --card-color: var(--chrono-accent); }
+.card-flag  { --card-color: var(--flag-accent); }
+
+/* ── MANIFESTO ── */
+.manifesto {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 60px 0;
+  margin-bottom: 80px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 48px;
+  align-items: start;
+}
+@media (max-width: 640px) { .manifesto { grid-template-columns: 1fr; } }
+.manifesto-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted);
+  padding-top: 6px;
+}
+.manifesto-text {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 600; line-height: 1.4;
+  letter-spacing: -0.5px;
+}
+.manifesto-text em { color: var(--muted); font-style: italic; font-weight: 400; }
+
+/* ── FOOTER ── */
+footer {
+  padding: 32px 0 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+}
+.footer-left {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px; font-weight: 700; color: var(--ink);
+}
+.footer-right { display: flex; align-items: center; gap: 20px; }
+.footer-link {
+  font-size: 13px; color: var(--muted); text-decoration: none;
+  transition: color .2s;
+}
+.footer-link:hover { color: var(--ink); }
+.kofi-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--ink); color: var(--bg);
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+  padding: 8px 16px; border-radius: 4px; text-decoration: none;
+  transition: opacity .2s;
+}
+.kofi-btn:hover { opacity: .8; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-eyebrow { animation: fadeUp .6s ease both; }
+.hero-title   { animation: fadeUp .6s .1s ease both; }
+.hero-body    { animation: fadeUp .6s .2s ease both; }
+.games-grid   { animation: fadeUp .6s .3s ease both; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="header-logo">guessr<span>.games</span></div>
+    <div class="header-tag">Free · No ads · No accounts</div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-eyebrow">Geography games</div>
+    <h1 class="hero-title">Know your<br><em>world.</em></h1>
+    <p class="hero-body">
+      Four free geography games that actually respect your time.
+      <strong>No ads. No subscriptions. No accounts.</strong>
+      Just you, a map, and everything you never knew you didn't know.
+    </p>
+  </section>
+
+  <hr class="divider">
+
+  <div class="games-label">Choose your game</div>
+
+  <div class="games-grid">
+
+    <a href="https://map.guessr.games" class="game-card card-map">
+      <div class="card-icon">🗺️</div>
+      <div class="card-name">Map<span>Guessr</span></div>
+      <div class="card-desc">Dropped into a random Google Street View location anywhere on Earth. Look around. Figure out where you are. Drop a pin.</div>
+      <div class="card-footer">
+        <span class="card-tag">Street View</span>
+        <span class="card-arrow">↗</span>
+      </div>
+    </a>
+
+    <a href="https://radio.guessr.games" class="game-card card-radio">
+      <div class="card-icon">📻</div>
+      <div class="card-name">Radio<span>Guessr</span></div>
+      <div class="card-desc">A live radio stream plays from somewhere in the world. Listen for the language, the accent, the music. Guess the country.</div>
+      <div class="card-footer">
+        <span class="card-tag">Live Radio</span>
+        <span class="card-arrow">↗</span>
+      </div>
+    </a>
+
+    <a href="https://chrono.guessr.games" class="game-card card-chrono">
+      <div class="card-icon">🕰️</div>
+      <div class="card-name">Chrono<span>Guessr</span></div>
+      <div class="card-desc">A historical photograph or artwork. Could be from last century or five centuries ago. Drag the timeline to the year you think it's from.</div>
+      <div class="card-footer">
+        <span class="card-tag">History</span>
+        <span class="card-arrow">↗</span>
+      </div>
+    </a>
+
+    <a href="https://flag.guessr.games" class="game-card card-flag">
+      <div class="card-icon">🚩</div>
+      <div class="card-name">Flag<span>Guessr</span></div>
+      <div class="card-desc">A flag, hidden behind four panels. Reveal as little as possible and still get it right. The faster you guess, the more points you score.</div>
+      <div class="card-footer">
+        <span class="card-tag">Flags</span>
+        <span class="card-arrow">↗</span>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="manifesto">
+    <div class="manifesto-label">Why we built this</div>
+    <div class="manifesto-text">
+      GeoGuessr used to be free. Then it wasn't.
+      <em>We think good games shouldn't cost anything to play.</em>
+      No paywalls. No ad networks. No dark patterns.
+      Just games.
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-left">guessr.games</div>
+    <div class="footer-right">
+      <a href="https://github.com/spicybandit78" class="footer-link" target="_blank">GitHub</a>
+      <a href="https://ko-fi.com" class="kofi-btn" target="_blank">☕ Buy me a coffee</a>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
