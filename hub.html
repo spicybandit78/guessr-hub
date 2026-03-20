@@ -231,6 +231,26 @@ footer {
 }
 .kofi-btn:hover { opacity: .8; }
 
+/* SHARE */
+.share-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 16px 0; border-top: 1px solid var(--border);
+  margin-top: 0; flex-wrap: wrap;
+}
+.share-lbl {
+  font-size: 12px; color: var(--muted); letter-spacing: 1px;
+  text-transform: uppercase; margin-right: 4px;
+}
+.share-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 500; padding: 7px 14px;
+  border-radius: 4px; text-decoration: none; border: 1px solid var(--border);
+  color: var(--ink); background: var(--bg); transition: all .2s; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+.share-btn:hover { border-color: var(--ink); background: var(--ink); color: var(--bg); }
+.share-btn.copied { border-color: var(--ink); background: var(--ink); color: var(--bg); }
+
 /* ── ANIMATIONS ── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(24px); }
@@ -338,6 +358,13 @@ footer {
     </div>
   </div>
 
+  <div class="share-row">
+    <span class="share-lbl">Share:</span>
+    <a class="share-btn" href="https://twitter.com/intent/tweet?text=Free%20geography%20games%20with%20no%20ads%20or%20paywalls%20%E2%80%94%20MapGuessr%2C%20RadioGuessr%2C%20FlagGuessr%20and%20more&url=https%3A%2F%2Fguessr.games" target="_blank">𝕏 Post</a>
+    <a class="share-btn" href="https://www.reddit.com/r/geoguessr/submit?url=https%3A%2F%2Fguessr.games&title=Free%20GeoGuessr%20alternatives%20%E2%80%94%20no%20ads%2C%20no%20paywall%2C%20just%20games" target="_blank">Reddit</a>
+    <button class="share-btn" onclick="copyLink(this)">⎘ Copy link</button>
+  </div>
+
   <footer>
     <div class="footer-left">guessr.games</div>
     <div class="footer-right">
@@ -347,5 +374,14 @@ footer {
   </footer>
 
 </div>
+<script>
+function copyLink(btn) {
+  navigator.clipboard.writeText('https://guessr.games').then(() => {
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '⎘ Copy link'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
 </body>
 </html>
